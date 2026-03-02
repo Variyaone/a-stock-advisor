@@ -1,0 +1,88 @@
+{
+  "selected_stocks": [
+    {
+      "rank": 1,
+      "stock_code": 1242,
+      "stock_name": "紫金矿业",
+      "score": 5.0750884,
+      "reasons": "基于市场活跃度推荐"
+    },
+    {
+      "rank": 2,
+      "stock_code": 1008,
+      "stock_name": "中国海油",
+      "score": 4.86056442,
+      "reasons": "基于市场活跃度推荐"
+    },
+    {
+      "rank": 3,
+      "stock_code": 602,
+      "stock_name": "华胜天成",
+      "score": 4.50454551,
+      "reasons": "基于市场活跃度推荐"
+    },
+    {
+      "rank": 4,
+      "stock_code": 1225,
+      "stock_name": "中国石油",
+      "score": 3.5582546,
+      "reasons": "基于市场活跃度推荐"
+    },
+    {
+      "rank": 5,
+      "stock_code": 1040,
+      "stock_name": "宝丰能源",
+      "score": 3.3200589,
+      "reasons": "基于市场活跃度推荐"
+    },
+    {
+      "rank": 6,
+      "stock_code": 1232,
+      "stock_name": "招商轮船",
+      "score": 3.1214925,
+      "reasons": "基于市场活跃度推荐"
+    },
+    {
+      "rank": 7,
+      "stock_code": 3271,
+      "stock_name": "湖南黄金",
+      "score": 2.94284,
+      "reasons": "基于市场活跃度推荐"
+    },
+    {
+      "rank": 8,
+      "stock_code": 648,
+      "stock_name": "中金黄金",
+      "score": 2.8352792,
+      "reasons": "基于市场活跃度推荐"
+    },
+    {
+      "rank": 9,
+      "stock_code": 4556,
+      "stock_name": "新易盛",
+      "score": 2.83095134,
+      "reasons": "基于市场活跃度推荐"
+    },
+    {
+      "rank": 10,
+      "stock_code": 655,
+      "stock_name": "烽火通信",
+      "score": 2.681085,
+      "reasons": "基于市场活跃度推荐"
+    }
+  ],
+  "portfolio_config": {
+    "n": 10,
+    "rebalance_frequency": "daily",
+    "weighting_method": "equal_weight",
+    "score_threshold": 0,
+    "factor_weights": {}
+  },
+  "timestamp": "2026-03-02T14:07:57.026420",
+  "data_month": "daily",
+  "control_summary": {
+    "industry": "行业分散: N/A",
+    "volatility": "未应用",
+    "drawdown": "未应用"
+  }
+}

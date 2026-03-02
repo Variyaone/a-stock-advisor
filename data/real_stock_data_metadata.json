@@ -1,0 +1,23 @@
+{
+  "source": "enhanced_simulation",
+  "start_date": "2019-01-01",
+  "end_date": "2024-12-31",
+  "min_amount": 1000000,
+  "generate_time": "2026-03-01 02:30:34",
+  "versions": [
+    {
+      "step": "generate_all_stocks",
+      "time": "2026-03-01 02:30:34",
+      "target_stocks": 500
+    },
+    {
+      "step": "process_complete",
+      "time": "2026-03-01 02:30:39",
+      "total_records": 764203,
+      "unique_stocks": 200,
+      "date_range": "2019-01-30 00:00:00 to 2024-12-31 00:00:00",
+      "trading_days": 1545
+    }
+  ],
+  "survivor_pool_dates": 8
+}

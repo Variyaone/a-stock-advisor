@@ -1,0 +1,364 @@
+{
+  "version": "1.0",
+  "created": "2026-02-28T22:00:00+08:00",
+  "last_updated": "2026-02-28T22:00:00+08:00",
+  "description": "A股量化系统风险限制配置 - 设定暂停线和风险阈值",
+  "documentation": "本配置文件定义了系统的风险控制阈值，当指标超过阈值时将触发相应的操作",
+  "limits": {
+    "drawdown_limit": {
+      "description": "最大回撤限制 - 设定策略实盘的回撤阈值",
+      "live_to_backtest_ratio": {
+        "value": 1.5,
+        "unit": "ratio",
+        "description": "实盘最大回撤与历史回测最大回撤的比率，超过此倍数将暂停策略",
+        "action": "PAUSE_STRATEGY",
+        "severity": "critical"
+      },
+      "absolute_max": {
+        "value": -0.25,
+        "unit": "decimal",
+        "percentage": "-25.0%",
+        "description": "绝对最大回撤限制，无论历史回测结果如何，超过此值必须停止策略",
+        "action": "STOP_STRATEGY",
+        "severity": "critical"
+      },
+      "warning_threshold": {
+        "value": -0.15,
+        "unit": "decimal",
+        "percentage": "-15.0%",
+        "description": "警告阈值，达到或超过此值将发出警告，要求密切监控",
+        "action": "MONITOR_CLOSLY",
+        "severity": "warning"
+      },
+      "monitoring_frequency": "daily",
+      "check_window": "rolling_20_days"
+    },
+    "ic_limit": {
+      "description": "IC (Information Coefficient) 限制 - 监控模型预测能力",
+      "min_threshold": {
+        "value": 0.03,
+        "unit": "decimal",
+        "description": "IC值的最小阈值，低于此值表明模型预测能力较弱",
+        "action": "MONITOR",
+        "severity": "warning"
+      },
+      "warning_threshold": {
+        "value": 0.05,
+        "unit": "decimal",
+        "description": "IC警告阈值，连续多个周期低于此值将触发模型复审",
+        "action": "MONITOR_CLOSLY",
+        "severity": "warning"
+      },
+      "consecutive_periods": {
+        "value": 5,
+        "unit": "periods",
+        "description": "连续多少个周期IC值低于阈值时触发模型复审",
+        "action": "MODEL_REVIEW",
+        "severity": "critical"
+      },
+      "calculation_window": 20,
+      "monitoring_frequency": "daily"
+    },
+    "exposure_limits": {
+      "description": "组合暴露限制 - 控制行业和风格暴露",
+      "industry_max_deviation": {
+        "value": 0.10,
+        "unit": "decimal",
+        "percentage": "10.0%",
+        "description": "单个行业偏离基准的最大比例，保持行业中性",
+        "action": "REDUCE_EXPOSURE",
+        "severity": "warning"
+      },
+      "style_max_beta": {
+        "value": 0.3,
+        "unit": "decimal",
+        "percentage": "30.0%",
+        "description": "风格因子的最大Beta暴露，确保风格中性",
+        "allowed_factors": [
+          "size",
+          "value",
+          "growth",
+          "momentum",
+          "volatility",
+          "liquidity"
+        ],
+        "action": "ADJUST_ALLOCATION",
+        "severity": "warning"
+      },
+      "position_concentration": {
+        "value": 0.15,
+        "unit": "decimal",
+        "percentage": "15.0%",
+        "description": "单只股票最大持仓比例，控制集中度风险",
+        "action": "REDUCE_CONCENTRATION",
+        "severity": "warning"
+      },
+      "max_positions": {
+        "value": 50,
+        "unit": "count",
+        "description": "最大持仓股票数量，保持适度分散",
+        "min_positions": 10,
+        "action": "ADJUST_POSITION_COUNT",
+        "severity": "info"
+      }
+    },
+    "volatility_limit": {
+      "description": "波动率限制 - 控制组合波动率",
+      "max_portfolio_volatility": {
+        "value": 0.25,
+        "unit": "decimal",
+        "percentage": "25.0%",
+        "description": "组合最大年化波动率",
+        "action": "REDUCE_VOLATILITY",
+        "severity": "warning"
+      },
+      "tracking_error_limit": {
+        "value": 0.08,
+        "unit": "decimal",
+        "percentage": "8.0%",
+        "description": "相对于基准的最大跟踪误差",
+        "action": "REDUCE_ACTIVE_RISK",
+        "severity": "warning"
+      },
+      "calculation_window": 20,
+      "monitoring_frequency": "daily"
+    },
+    "turnover_limit": {
+      "description": "换手率限制 - 控制交易成本",
+      "max_daily_turnover": {
+        "value": 0.10,
+        "unit": "decimal",
+        "percentage": "10.0%",
+        "description": "单日最大换手率，控制交易成本",
+        "action": "REDUCE_TURNOVER",
+        "severity": "warning"
+      },
+      "avg_monthly_turnover_limit": {
+        "value": 0.50,
+        "unit": "decimal",
+        "percentage": "50.0%",
+        "description": "月平均换手率上限",
+        "action": "MONITOR",
+        "severity": "info"
+      }
+    },
+    "performance_targets": {
+      "description": "绩效目标 - 定义期望的业绩基准",
+      "min_annual_return": {
+        "value": 0.15,
+        "unit": "decimal",
+        "percentage": "15.0%",
+        "description": "目标年化收益率（最小值）",
+        "target": ">= 15.0%",
+        "action": "NONE",
+        "severity": "info"
+      },
+      "min_information_ratio": {
+        "value": 1.5,
+        "unit": "ratio",
+        "description": "目标信息比率（IR），衡量超额收益与跟踪误差之比",
+        "target": ">= 1.5",
+        "action": "NONE",
+        "severity": "info"
+      },
+      "max_volatility": {
+        "value": 0.20,
+        "unit": "decimal",
+        "percentage": "20.0%",
+        "description": "最大允许波动率",
+        "target": "<= 20.0%",
+        "action": "REDUCE_VOLATILITY",
+        "severity": "warning"
+      },
+      "win_rate_target": {
+        "value": 0.55,
+        "unit": "decimal",
+        "percentage": "55.0%",
+        "description": "目标胜率",
+        "target": ">= 55.0%",
+        "action": "NONE",
+        "severity": "info"
+      },
+      "profit_loss_ratio": {
+        "value": 1.5,
+        "unit": "ratio",
+        "description": "盈亏比目标",
+        "target": ">= 1.5",
+        "action": "NONE",
+        "severity": "info"
+      }
+    }
+  },
+  "risk_controls": {
+    "system_wide_checks": {
+      "enabled": true,
+      "description": "系统级风险检查，在每次运行前自动执行",
+      "checks": [
+        "drawdown_check",
+        "ic_check",
+        "exposure_check",
+        "volatility_check",
+        "turnover_check"
+      ]
+    },
+    "alert_system": {
+      "enabled": true,
+      "description": "告警系统配置",
+      "channels": [
+        "feishu_webhook",
+        "console_log",
+        "file_log"
+      ],
+      "severity_levels": {
+        "critical": {
+          "action": "STOP_PAUSE",
+          "notification": "immediate",
+          "auto_action": true
+        },
+        "warning": {
+          "action": "WARN",
+          "notification": "immediate",
+          "auto_action": false
+        },
+        "info": {
+          "action": "LOG",
+          "notification": "daily_digest",
+          "auto_action": false
+        }
+      }
+    }
+  },
+  "market_states": {
+    "high_volatility": {
+      "trigger": "market_volatility > 0.30",
+      "adjustments": {
+        "reduce_exposure": true,
+        "increase_safety_margin": 0.1,
+        "slow_down_trading": true
+      },
+      "description": "市场波动率过高时降低风险暴露"
+    },
+    "low_volatility": {
+      "trigger": "market_volatility < 0.10",
+      "adjustments": {
+        "normal_operation": true,
+        "maintain_exposure": true
+      },
+      "description": "市场波动率正常时按标准策略运行"
+    },
+    "market_crash": {
+      "trigger": "market_return < -0.10",
+      "adjustments": {
+        "emergency_stop": true,
+        "close_positions": false,
+        "reduce_exposure": 0.5,
+        "freeze_new_trades": true
+      },
+      "description": "市场崩盘触发紧急措施"
+    }
+  },
+  "iteration_schedule": {
+    "model_retraining": {
+      "frequency": "quarterly",
+      "schedule": [
+        "Q1: 2026-04-01",
+        "Q2: 2026-07-01",
+        "Q3: 2026-10-01",
+        "Q4: 2027-01-01"
+      ],
+      "description": "每季度重新训练模型，保持因子有效性"
+    },
+    "factor_review": {
+      "frequency": "monthly",
+      "schedule": "每月第一个交易日",
+      "description": "每月评估因子表现，决定是否需要调整"
+    },
+    "strategy_evaluation": {
+      "frequency": "weekly",
+      "schedule": "每周一",
+      "description": "每周评估策略表现，检查是否需要调整"
+    },
+    "risk_limit_review": {
+      "frequency": "annually",
+      "schedule": "每年1月1日",
+      "description": "每年回顾风险限制配置是否合理"
+    }
+  },
+  "actions": {
+    "PAUSE_STRATEGY": {
+      "description": "暂停策略",
+      "steps": [
+        "停止新的交易信号生成",
+        "保持现有持仓",
+        "发送紧急通知",
+        "触发原因分析和复盘"
+      ],
+      "恢复_condition": "IC恢复到阈值以上 AND 回撤恢复正常范围"
+    },
+    "STOP_STRATEGY": {
+      "description": "停止策略",
+      "steps": [
+        "立即停止所有交易",
+        "平仓（可选，根据风险等级）",
+        "发送紧急通知",
+        "触发全面复盘",
+        "报告管理层"
+      ],
+      "recovery_condition": "管理层审批 AND 风险评估通过"
+    },
+    "MONITOR_CLOSLY": {
+      "description": "密切监控",
+      "steps": [
+        "增加监控频率",
+        "发送警告通知",
+        "准备应急预案",
+        "记录观察指标"
+      ]
+    },
+    "MODEL_REVIEW": {
+      "description": "模型复审",
+      "steps": [
+        "暂停新信号生成",
+        "全面模型诊断",
+        "因子有效性检查",
+        "数据异常检查",
+        "决定重新训练或调整"
+      ]
+    },
+    "REDUCE_EXPOSURE": {
+      "description": "降低暴露",
+      "steps": [
+        "计算需降低的暴露",
+        "选择需调整的持仓",
+        "分批执行调仓",
+        "监控市场影响"
+      ]
+    },
+    "ADJUST_ALLOCATION": {
+      "description": "调整权重分配",
+      "steps": [
+        "重新计算目标权重",
+        "优化考虑交易成本",
+        "执行调仓计划",
+        "记录调整原因"
+      ]
+    }
+  },
+  "metadata": {
+    "config_author": "innovator",
+    "review_committee": ["trader", "monitor", "optimizer"],
+    "change_log": [
+      {
+        "version": "1.0",
+        "date": "2026-02-28",
+        "changes": [
+          "初始版本",
+          "设定核心风险阈值",
+          "定义暂停线和告警系统",
+          "建立制度化迭代流程"
+        ],
+        "author": "innovator"
+      }
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "factor_name": "momentum_20d",
+  "validation_date": "2026-03-01 18:59:58",
+  "ic_metrics": {
+    "ic_mean": -0.08734609509426003,
+    "ic_std": 0.0187268208940965,
+    "ic_max": -0.04122089291148213,
+    "ic_min": -0.15639296745383183,
+    "ir": -4.664224407774161,
+    "ic_abs_mean": 0.08734609509426003,
+    "ic_win_rate": 0.0,
+    "ic_t_stat": -167.71762339902313,
+    "ic_p_value": 0.0,
+    "n_periods": 1294
+  },
+  "monotonicity_metrics": {
+    "monotonicity": 0.25,
+    "group_returns": [
+      10.087918253047974,
+      2.0320427134096066,
+      3.435356157628397,
+      1.285850321275576,
+      -0.15104440759481055
+    ],
+    "long_short_return": -10.238962660642784,
+    "spearman_corr": 0,
+    "spearman_p_value": 1,
+    "n_groups": 5
+  },
+  "validation": {
+    "is_valid": false,
+    "passed_tests": [
+      "IC绝对值"
+    ],
+    "failed_tests": [
+      "IR (-4.6642 < 0.5)",
+      "IC胜率 (0.0000 < 0.55)",
+      "单调性 (0.2500 < 0.6)"
+    ],
+    "scores": {
+      "ic_score": 1.0,
+      "ir_score": -9.328448815548322,
+      "win_rate_score": 0.0,
+      "monotonicity_score": 0.4166666666666667
+    },
+    "final_score": -1.9779455372204138
+  },
+  "periods": 5,
+  "description": "20日价格动量",
+  "category": "技术面因子",
+  "notes": "典型的趋势跟踪因子，用于测试实验室功能"
+}

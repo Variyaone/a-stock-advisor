@@ -1,0 +1,26 @@
+{
+  "source": "akshare",
+  "fetch_time": "2026-03-02 09:27:13",
+  "data_type": "realtime",
+  "total_stocks": 5484,
+  "fetch_method": "stock_zh_a_spot",
+  "processed_stocks": 5484,
+  "trade_date": "2026-03-02",
+  "file": "data/latest_realtime_data.pkl",
+  "records": 5484,
+  "columns": [
+    "stock_code",
+    "stock_name",
+    "close",
+    "change_pct",
+    "change_amount",
+    "volume",
+    "amount",
+    "pre_close",
+    "open",
+    "high",
+    "low",
+    "trade_date",
+    "date_dt"
+  ]
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "test_name": "基本功能测试",
+    "success": true,
+    "message": "基本功能测试通过",
+    "timestamp": "2026-03-02 02:05:50"
+  },
+  {
+    "test_name": "交叉验证测试",
+    "success": true,
+    "message": "交叉验证测试通过",
+    "timestamp": "2026-03-02 02:05:50"
+  },
+  {
+    "test_name": "文件读写测试",
+    "success": true,
+    "message": "文件读写测试通过",
+    "timestamp": "2026-03-02 02:05:50"
+  },
+  {
+    "test_name": "数据一致性修复测试",
+    "success": true,
+    "message": "数据一致性修复测试通过",
+    "timestamp": "2026-03-02 02:05:51"
+  },
+  {
+    "test_name": "自定义阈值测试",
+    "success": false,
+    "message": "阈值测试未验证",
+    "timestamp": "2026-03-02 02:05:51"
+  }
+]

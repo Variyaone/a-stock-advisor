@@ -1,0 +1,17 @@
+{
+  "cleaning_log": [
+    {
+      "step": "remove_duplicates",
+      "before": 764203,
+      "after": 307975,
+      "removed": 456228
+    },
+    {
+      "step": "fix_price_logic",
+      "fixed": 78756,
+      "remaining_unfixable": 0
+    }
+  ],
+  "final_records": 307975,
+  "timestamp": "2026-03-02 02:19:56"
+}

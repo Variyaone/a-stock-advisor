@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# 数据文件（太大不上传）
+data/*.pkl
+data/*.csv
+data/*.h5
+!data/.gitkeep
+
+# 日志
+logs/
+*.log
+
+# 配置文件（含敏感信息）
+config/feishu_config.json
+config/api_keys.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 临时文件
+*.tmp
+*.bak
+temp/
+tmp/

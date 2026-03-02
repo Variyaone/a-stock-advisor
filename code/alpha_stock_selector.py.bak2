@@ -1,0 +1,708 @@
+#!/usr/bin/env python3
+"""
+α因子筛选模块
+增强股票选择质量，使用α因子筛选低估值高成长股票
+"""
+
+import pandas as pd
+import numpy as np
+from typing import Dict, List, Tuple, Optional
+from dataclasses import dataclass
+import itertools
+import warnings
+warnings.filterwarnings('ignore')
+
+@dataclass
+class AlphaFactor:
+    """α因子定义"""
+    name: str
+    formula: str  # 因子计算公式
+    ic_target: float  # 目标IC值
+    ir_target: float  # 目标IR值
+    description: str
+    direction: str  # 'positive' or 'negative'
+
+class AlphaStockSelector:
+    """α选股器"""
+    
+    def __init__(self, ic_threshold: float = 0.05, ir_threshold: float = 1.0,
+                 correlation_threshold: float = 0.7):
+        """
+        初始化α选股器
+        
+        Args:
+            ic_threshold: IC阈值 (默认5%)
+            ir_threshold: IR阈值 (默认1.0)
+            correlation_threshold: 因子相关性阈值 (避免冗余因子)
+        """
+        self.ic_threshold = ic_threshold
+        self.ir_threshold = ir_threshold
+        self.correlation_threshold = correlation_threshold
+        
+        # 定义α因子
+        self.alpha_factors = [
+            AlphaFactor(
+                name='PE_TTM',  # 市盈率
+                formula='close / (eps_ttm * 1000)',
+                ic_target=-0.05,
+                ir_target=1.0,
+                description='静态市盈率，衡量估值水平',
+                direction='negative'
+            ),
+            AlphaFactor(
+                name='PB',  # 市净率
+                formula='close / book_value_per_share',
+                ic_target=-0.05,
+                ir_target=1.0,
+                description='市净率，衡量相对于净资产的估值',
+                direction='negative'
+            ),
+            AlphaFactor(
+                name='PEG',  # PEG比率
+                formula='pe / revenue_growth_rate',
+                ic_target=-0.06,
+                ir_target=1.2,
+                description='相对成长性的估值，PEG<1为低估',
+                direction='negative'
+            ),
+            AlphaFactor(
+                name='ROE',  # 净资产收益率
+                formula='net_profit / shareholders_equity',
+                ic_target=0.08,
+                ir_target=1.5,
+                description='综合反映盈利能力',
+                direction='positive'
+            ),
+            AlphaFactor(
+                name='ROA',  # 总资产收益率
+                formula='net_profit / total_assets',
+                ic_target=0.05,
+                ir_target=1.0,
+                description='资产使用效率',
+                direction='positive'
+            ),
+            AlphaFactor(
+                name='Gross_Margin',  # 毛利率
+                formula='revenue - cost_of_goods_sold / revenue',
+                ic_target=0.06,
+                ir_target=1.2,
+                description='产品竞争力',
+                direction='positive'
+            ),
+            AlphaFactor(
+                name='Revenue_Growth',  # 营收增长率
+                formula='revenue_ttm / revenue_ttm_lag_1 - 1',
+                ic_target=0.07,
+                ir_target=1.3,
+                description='成长性指标',
+                direction='positive'
+            ),
+            AlphaFactor(
+                name='Profit_Growth',  # 利润增长率
+                formula='net_profit_ttm / net_profit_ttm_lag_1 - 1',
+                ic_target=0.08,
+                ir_target=1.4,
+                description='盈利质量',
+                direction='positive'
+            ),
+            AlphaFactor(
+                name='Debt_to_Assets',  # 资产负债率
+                formula='total_debt / total_assets',
+                ic_target=-0.04,
+                ir_target=0.8,
+                description='财务杠杆，过高有风险',
+                direction='negative'
+            ),
+            AlphaFactor(
+                name='Current_Ratio',  # 流动比率
+                formula='current_assets / current_liabilities',
+                ic_target=0.03,
+                ir_target=0.6,
+                description='短期偿债能力',
+                direction='positive'
+            ),
+            AlphaFactor(
+                name='Operating_Cash_Flow',  # 经营现金流
+                formula='operating_cash_flow / market_cap',
+                ic_target=0.05,
+                ir_target=0.9,
+                description='现金流质量',
+                direction='positive'
+            ),
+            AlphaFactor(
+                name='Turnover_Rate',  # 换手率
+                formula='volume / total_shares * 100',
+                ic_target=0.02,
+                ir_target=0.5,
+                description='流动性水平',
+                direction='positive'
+            )
+        ]
+    
+    def calculate_ic(self, factor_data: pd.Series, returns: pd.Series) -> float:
+        """
+        计算因子的IC值
+        
+        Args:
+            factor_data: 因子数据 Series
+            returns: 收益率数据 Series
+            
+        Returns:
+            IC值
+        """
+        # 对齐数据
+        common_index = factor_data.index.intersection(returns.index)
+        if len(common_index) < 10:
+            return 0.0
+        
+        factor_aligned = factor_data.loc[common_index]
+        returns_aligned = returns.loc[common_index]
+        
+        # 移除NaN
+        mask = ~(factor_aligned.isna() | returns_aligned.isna())
+        factor_aligned = factor_aligned[mask]
+        returns_aligned = returns_aligned[mask]
+        
+        if len(factor_aligned) < 10:
+            return 0.0
+        
+        # 计算Spearman相关系数
+        ic = factor_aligned.corr(returns_aligned, method='spearman')
+        
+        return ic if not pd.isna(ic) else 0.0
+    
+    def calculate_ic_ir(self, historical_data: pd.DataFrame, 
+                        factor_col: str, return_col: str = 'return_1d') -> Tuple[float, float]:
+        """
+        计算因子的IC和IR值
+        
+        Args:
+            historical_data: 历史数据 DataFrame
+            factor_col: 因子列名
+            return_col: 收益率列名
+            
+        Returns:
+            (IC, IR)
+        """
+        if 'date' not in historical_data.columns:
+            dates = [pd.Timestamp.now()] * len(historical_data)
+            historical_data = historical_data.copy()
+            historical_data['date'] = dates
+        
+        # 按日期分组计算IC
+        ic_values = []
+        for date, group in historical_data.groupby('date'):
+            factor_data = group[factor_col] if factor_col in group.columns else pd.Series()
+            returns_data = group[return_col] if return_col in group.columns else pd.Series()
+            
+            ic = self.calculate_ic(factor_data, returns_data)
+            if ic != 0:
+                ic_values.append(ic)
+        
+        if len(ic_values) < 5:
+            return 0.0, 0.0
+        
+        ic_series = pd.Series(ic_values)
+        ic_mean = ic_series.mean()
+        ic_std = ic_series.std()
+        
+        ir = ic_mean / ic_std if ic_std > 0 else 0.0
+        
+        return ic_mean, ir
+    
+    def validate_factors(self, data: pd.DataFrame) -> Dict[str, Dict]:
+        """
+        验证因子有效性
+        
+        Args:
+            data: 因子数据 DataFrame
+            
+        Returns:
+            因子验证结果 {factor_name: {IC, IR, valid}}
+        """
+        results = {}
+        
+        for factor in self.alpha_factors:
+            factor_name = factor.name
+            
+            if factor_name not in data.columns:
+                # 如果数据中没有这个因子，添加默认值
+                results[factor_name] = {
+                    'IC': 0.0,
+                    'IR': 0.0,
+                    'valid': False,
+                    'message': '数据中无此因子列'
+                }
+                continue
+            
+            # 计算IC和IR
+            ic, ir = self.calculate_ic_ir(data, factor_name)
+            
+            # 判断是否有效
+            ic_valid = abs(ic) >= self.ic_threshold if self.ic_threshold > 0 else True
+            ir_valid = ir >= self.ir_threshold if self.ir_threshold > 0 else True
+            valid = ic_valid and ir_valid
+            
+            results[factor_name] = {
+                'IC': ic,
+                'IR': ir,
+                'valid': valid,
+                'message': f"IC={ic:.3f}, IR={ir:.2f}"
+            }
+        
+        return results
+    
+    def check_factor_correlation(self, data: pd.DataFrame, 
+                                 factor_list: List[str] = None) -> pd.DataFrame:
+        """
+        检查因子相关性，避免冗余
+        
+        Args:
+            data: 因子数据
+            factor_list: 要检查的因子列表
+            
+        Returns:
+            相关性矩阵 DataFrame
+        """
+        if factor_list is None:
+            # 使用所有α因子
+            factor_list = [f.name for f in self.alpha_factors if f.name in data.columns]
+        
+        # 如果没有足够的因子，返回空DataFrame
+        if len(factor_list) < 2:
+            return pd.DataFrame()
+        
+        # 计算相关性
+        factor_data = data[factor_list]
+        correlation_matrix = factor_data.corr(method='spearman')
+        
+        # 找出高相关性的因子对
+        high_corr_pairs = []
+        for i, factor1 in enumerate(factor_list):
+            for factor2 in factor_list[i+1:]:
+                corr = correlation_matrix.loc[factor1, factor2]
+                if abs(corr) > self.correlation_threshold:
+                    high_corr_pairs.append({
+                        'factor1': factor1,
+                        'factor2': factor2,
+                        'correlation': corr
+                    })
+        
+        if high_corr_pairs:
+            print("⚠️ 发现高相关性因子对:")
+            for pair in high_corr_pairs:
+                print(f"   {pair['factor1']} - {pair['factor2']}: {pair['correlation']:.3f}")
+        
+        return correlation_matrix
+    
+    def select_effective_factors(self, data: pd.DataFrame) -> List[str]:
+        """
+        选择有效因子
+        
+        Args:
+            data: 因子数据
+            
+        Returns:
+            有效因子列表
+        """
+        # 验证因子
+        validation_results = self.validate_factors(data)
+        
+        # 选择有效的因子
+        valid_factors = [name for name, result in validation_results.items() 
+                        if result['valid']]
+        
+        if not valid_factors:
+            # 如果没有有效因子，使用所有因子（放宽条件）
+            print("⚠️ 没有通过IC/IR验证的因子，使用所有可用因子")
+            valid_factors = [f.name for f in self.alpha_factors 
+                           if f.name in data.columns]
+        
+        print(f"✓ 使用因子: {', '.join(valid_factors)}")
+        
+        return valid_factors
+    
+    def industry_neutralize(self, data: pd.DataFrame, 
+                           factor_col: str, 
+                           industry_col: str = 'industry') -> pd.Series:
+        """
+        行业中性化处理
+        
+        Args:
+            data: 数据 DataFrame
+            factor_col: 因子列名
+            industry_col: 行业列名
+            
+        Returns:
+            去行业因子后的数据 Series
+        """
+        if industry_col not in data.columns:
+            return data[factor_col]
+        
+        result = data[factor_col].copy()
+        
+        # 按行业分组去均值
+        for industry, group in data.groupby(industry_col):
+            industry_mean = group[factor_col].mean()
+            result[group.index] = group[factor_col] - industry_mean
+        
+        return result
+    
+    def calculate_alpha_score(self, stock_data: pd.DataFrame, 
+                             factor_list: List[str] = None) -> pd.Series:
+        """
+        计算α因子得分
+        
+        Args:
+            stock_data: 股票数据 DataFrame (index: stock_code)
+            factor_list: 使用的因子列表，None则自动选择
+            
+        Returns:
+            α得分 Series (index: stock_code)
+        """
+        if factor_list is None:
+            factor_list = self.select_effective_factors(stock_data)
+        
+        # 如果没有可用因子，返回空Series
+        if not factor_list:
+            return pd.Series(0.0, index=stock_data.index)
+        
+        # 标准化因子
+        normalized_scores = pd.Series(0.0, index=stock_data.index)
+        
+        for factor_name in factor_list:
+            if factor_name not in stock_data.columns:
+                continue
+            
+            # 找到对应的因子定义
+            factor_def = next((f for f in self.alpha_factors if f.name == factor_name), None)
+            if factor_def is None:
+                continue
+            
+            factor_data = stock_data[factor_name]
+            
+            # 移除NaN
+            factor_data = factor_data.fillna(factor_data.median())
+            
+            # 标准化 (Z-score)
+            mean = factor_data.mean()
+            std = factor_data.std()
+            
+            if std > 0:
+                normalized = (factor_data - mean) / std
+            else:
+                normalized = pd.Series(0, index=stock_data.index)
+            
+            # 根据因子方向调整得分
+            if factor_def.direction == 'negative':
+                normalized = -normalized
+            
+            normalized_scores += normalized
+        
+        # 归一化到0-100分
+        if len(normalized_scores) > 0:
+            min_score = normalized_scores.min()
+            max_score = normalized_scores.max()
+            
+            if max_score > min_score:
+                normalized_scores = (normalized_scores - min_score) / (max_score - min_score) * 100
+        
+        return normalized_scores
+    
+    def filter_undervalued_high_alpha(self, stock_data: pd.DataFrame,
+                                     alpha_scores: pd.Series = None,
+                                     pb_threshold: float = 3.0,
+                                     pe_threshold: float = 30.0,
+                                     peg_threshold: float = 1.2,
+                                     alpha_threshold: float = 80.0,
+                                     min_turnover: float = 0.5,  # 0.5%
+                                     max_market_cap: float = 500000.0,  # 5000亿
+                                     min_market_cap: float = 0.0) -> pd.DataFrame:
+        """
+        筛选"低估+高α"股票
+        
+        Args:
+            stock_data: 股票数据 DataFrame (index: stock_code)
+            alpha_scores: α得分 Series，如果为None则计算
+            pb_threshold: PB阈值
+            pe_threshold: PE阈值
+            peg_threshold: PEG阈值
+            alpha_threshold: α得分阈值
+            min_turnover: 最小换手率 (%)
+            max_market_cap: 最大市值 (亿元)
+            min_market_cap: 最小市值 (亿元)
+            
+        Returns:
+            筛选后的股票 DataFrame
+        """
+        # 如果没有提供α得分，则计算
+        if alpha_scores is None:
+            alpha_scores = self.calculate_alpha_score(stock_data)
+        
+        # 计算行业均值用于低估判断
+        industry_means = pd.DataFrame()
+        if 'industry' in stock_data.columns:
+            for col in ['PB', 'PE_TTM', 'PEG']:
+                if col in stock_data.columns:
+                    industry_means[col] = stock_data.groupby('industry')[col].transform('mean')
+        
+        # 筛选条件
+        mask = pd.Series(True, index=stock_data.index)
+        
+        # α得分条件
+        if alpha_threshold > 0:
+            mask &= (alpha_scores >= alpha_threshold)
+        
+        # PB条件
+        if 'PB' in stock_data.columns:
+            pb_col = stock_data['PB']
+            if 'PB' in industry_means.columns:
+                mask &= (pb_col < industry_means['PB'])
+            else:
+                mask &= (pb_col < pb_threshold)
+        
+        # PE条件
+        if 'PE_TTM' in stock_data.columns:
+            pe_col = stock_data['PE_TTM']
+            if 'PE_TTM' in industry_means.columns:
+                mask &= (pe_col < industry_means['PE_TTM'])
+            else:
+                mask &= (pe_col < pe_threshold)
+        
+        # PEG条件
+        if 'PEG' in stock_data.columns:
+            peg_col = stock_data['PEG']
+            if str(peg_threshold) not in ['inf', 'nan']:
+                mask &= (peg_col < peg_threshold)
+        
+        # 流动性条件 (换手率)
+        if 'Turnover_Rate' in stock_data.columns:
+            mask &= (stock_data['Turnover_Rate'] >= min_turnover)
+        elif '换手率' in stock_data.columns:
+            mask &= (stock_data['换手率'] >= min_turnover)
+        
+        # 市值条件
+        if '市值_亿' in stock_data.columns:
+            market_cap = stock_data['市值_亿']
+            if min_market_cap > 0:
+                mask &= (market_cap >= min_market_cap)
+            if max_market_cap > 0:
+                mask &= (market_cap <= max_market_cap)
+        
+        # 应用筛选
+        filtered = stock_data[mask].copy()
+        filtered['alpha_score'] = alpha_scores[mask]
+        
+        return filtered
+    
+    def build_portfolio(self, selected_stocks: pd.DataFrame,
+                       alpha_scores: pd.Series,
+                       core_ratio: float = 0.6,
+                       satellite_ratio: float = 0.2,
+                       cash_ratio: float = 0.2,
+                       n_core: int = 5,
+                       n_satellite: int = 2) -> Dict:
+        """
+        构建投资组合
+        
+        Args:
+            selected_stocks: 选中的股票 DataFrame (index: stock_code)
+            alpha_scores: α得分 Series
+            core_ratio: 核心持仓比例
+            satellite_ratio: 卫星持仓比例
+            cash_ratio: 现金比例
+            n_core: 核心持仓数量
+            n_satellite: 卫星持仓数量
+            
+        Returns:
+            组合配置字典
+        """
+        # 按α得分排序
+        selected_stocks = selected_stocks.copy()
+        selected_stocks['alpha_score'] = alpha_scores
+        selected_stocks = selected_stocks.sort_values('alpha_score', ascending=False)
+        
+        # 核心持仓: α得分最高的股票
+        core_holdings = selected_stocks.head(n_core)
+        core_weight_per_stock = core_ratio / n_core
+        
+        # 卫星持仓: 行业轮动股票 (可以按行业分散)
+        satellite_holdings = selected_stocks.iloc[n_core:n_core + n_satellite]
+        satellite_weight_per_stock = satellite_ratio / n_satellite if n_satellite > 0 else 0
+        
+        portfolio = {
+            'core': [],
+            'satellite': [],
+            'cash': cash_ratio,
+            'total': 1.0
+        }
+        
+        # 添加核心持仓
+        for idx, (stock_code, row) in enumerate(core_holdings.iterrows()):
+            # 优先从列中获取stock_name，如果stock_code是索引，可能需要从其他列获取
+            stock_name = row.get('stock_name', row.get('股票名称', row.get('name', str(stock_code))))
+            # 如果stock_code是整数索引，尝试从列中获取真实的stock_code
+            real_stock_code = row.get('stock_code', stock_code)
+            portfolio['core'].append({
+                'stock_code': real_stock_code,
+                'stock_name': stock_name,
+                'weight': core_weight_per_stock,
+                'alpha_score': row['alpha_score'],
+                'rank': idx + 1
+            })
+        
+        # 添加卫星持仓
+        for idx, (stock_code, row) in enumerate(satellite_holdings.iterrows()):
+            # 优先从列中获取stock_name
+            stock_name = row.get('stock_name', row.get('股票名称', row.get('name', str(stock_code))))
+            # 如果stock_code是整数索引，尝试从列中获取真实的stock_code
+            real_stock_code = row.get('stock_code', stock_code)
+            portfolio['satellite'].append({
+                'stock_code': real_stock_code,
+                'stock_name': stock_name,
+                'weight': satellite_weight_per_stock,
+                'alpha_score': row['alpha_score'],
+                'rank': n_core + idx + 1
+            })
+        
+        return portfolio
+    
+    def select_stocks(self, stock_data: pd.DataFrame, 
+                     n: int = 10,
+                     apply_filters: bool = True) -> Tuple[pd.DataFrame, Dict]:
+        """
+        执行选股
+        
+        Args:
+            stock_data: 股票数据 DataFrame (index: stock_code)
+            n: 选股数量
+            apply_filters: 是否应用"低估+高α"筛选
+            
+        Returns:
+            (选中的股票DataFrame, 组合配置字典)
+        """
+        print("=" * 60)
+        print("🔬 α因子选股")
+        print("=" * 60)
+        
+        # 1. 选择有效因子
+        factor_list = self.select_effective_factors(stock_data)
+        
+        # 2. 计算α得分
+        print("\n📊 计算α因子得分...")
+        alpha_scores = self.calculate_alpha_score(stock_data, factor_list)
+        print(f"✓ α得分范围: {alpha_scores.min():.1f} - {alpha_scores.max():.1f}")
+        
+        # 3. 应用低估+高α筛选
+        if apply_filters:
+            print(f"\n🎯 应用“低估+高α”筛选...")
+            print(f"  • α得分阈值: >80分")
+            print(f"  • 流动性: 换手率>0.5%")
+            print(f"  •市值限制: 排除>5000亿")
+            
+            filtered = self.filter_undervalued_high_alpha(
+                stock_data, 
+                alpha_scores, 
+                alpha_threshold=80.0,
+                min_turnover=0.5,
+                max_market_cap=500000.0
+            )
+            
+            print(f"✓ 筛选后剩余: {len(filtered)}只股票")
+            
+            if len(filtered) < n:
+                print(f"⚠️ 筛选后股票数量({len(filtered)})少于选股数量({n})")
+                # 如果筛选后股票太少，放宽条件
+                if len(filtered) == 0:
+                    print("  → 放宽α得分阈值至70分")
+                    filtered = self.filter_undervalued_high_alpha(
+                        stock_data,
+                        alpha_scores,
+                        alpha_threshold=70.0,
+                        min_turnover=0.0,
+                        max_market_cap=float('inf')
+                    )
+                    print(f"  → 放宽后剩余: {len(filtered)}只股票")
+            
+            stock_data = filtered
+            alpha_scores = alpha_scores[filtered.index]
+        else:
+            # 不应用筛选，直接按α得分排序
+            stock_data = stock_data.copy()
+            stock_data['alpha_score'] = alpha_scores
+            stock_data = stock_data.sort_values('alpha_score', ascending=False).head(n)
+            alpha_scores = stock_data['alpha_score']
+        
+        # 4. 选择Top N
+        selected = stock_data.head(n)
+        
+        print(f"\n✓ 选定Top {len(selected)}只股票")
+        print("\n📋 选股结果:")
+        for idx, (stock_code, row) in enumerate(selected.iterrows(), 1):
+            # 获取股票名称，优先使用stock_name列
+            stock_name = row.get('stock_name', row.get('股票名称', row.get('name', str(stock_code))))
+            # 获取真实的股票代码（如果stock_code是索引，可能需要从列中获取）
+            real_stock_code = row.get('stock_code', stock_code)
+            alpha_score = row.get('alpha_score', 0) if 'alpha_score' in row.index else alpha_scores.get(stock_code, 0)
+            print(f" {idx}. {stock_name}({real_stock_code}) - α得分: {alpha_score:.1f}")
+            alpha_score = row.get('alpha_score', 0) if 'alpha_score' in row.index else alpha_scores[stock_code]
+            print(f"  {idx}. {stock_name}({stock_code}) - α得分: {alpha_score:.1f}")
+        
+        # 5. 构建投资组合
+        print(f"\n💼 构建投资组合...")
+        n_core = min(5, len(selected))
+        n_satellite = min(2, len(selected) - n_core)
+        
+        portfolio_config = self.build_portfolio(
+            selected, 
+            alpha_scores,
+            core_ratio=0.6,
+            satellite_ratio=0.2,
+            cash_ratio=0.2,
+            n_core=n_core,
+            n_satellite=n_satellite
+        )
+        
+        print(f"  • 核心持仓: {len(portfolio_config['core'])}只 (60%)")
+        for holding in portfolio_config['core']:
+            print(f"    - {holding['stock_name']}({holding['stock_code']}): {holding['weight']*100:.1f}%")
+        
+        print(f"  • 卫星持仓: {len(portfolio_config['satellite'])}只 (20%)")
+        for holding in portfolio_config['satellite']:
+            print(f"    - {holding['stock_name']}({holding['stock_code']}): {holding['weight']*100:.1f}%")
+        
+        print(f"  • 现金: 20%")
+        
+        print("=" * 60)
+        
+        return selected, portfolio_config
+
+
+# 测试代码
+if __name__ == "__main__":
+    # 创建测试数据
+    np.random.seed(42)
+    n_stocks = 100
+    
+    test_data = pd.DataFrame({
+        'stock_code': [f'{i:06d}' for i in range(1, n_stocks+1)],
+        '股票名称': [f'测试股票{i}' for i in range(1, n_stocks+1)],
+        'PE_TTM': np.random.uniform(5, 50, n_stocks),
+        'PB': np.random.uniform(0.5, 10, n_stocks),
+        'PEG': np.random.uniform(0.3, 3, n_stocks),
+        'ROE': np.random.uniform(0, 0.3, n_stocks),
+        'ROA': np.random.uniform(0, 0.15, n_stocks),
+        'Revenue_Growth': np.random.uniform(-0.1, 0.5, n_stocks),
+        'Profit_Growth': np.random.uniform(-0.2, 0.6, n_stocks),
+        'Debt_to_Assets': np.random.uniform(0.1, 0.8, n_stocks),
+        'Current_Ratio': np.random.uniform(0.5, 3, n_stocks),
+        'Operating_Cash_Flow': np.random.uniform(0, 0.2, n_stocks),
+        'Turnover_Rate': np.random.uniform(0.1, 10, n_stocks),
+        '市值_亿': np.random.uniform(50, 600000, n_stocks),  # 50亿到6000亿
+        'industry': np.random.choice(['银行', '房地产', '消费品', '科技', '医药'], n_stocks)
+    })
+    test_data = test_data.set_index('stock_code')
+    
+    # 测试α选股器
+    selector = AlphaStockSelector()
+    selected, portfolio = selector.select_stocks(test_data, n=10, apply_filters=True)

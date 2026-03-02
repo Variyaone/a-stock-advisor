@@ -1,0 +1,21 @@
+{
+  "cleaning_log": [
+    {
+      "step": "rename_columns",
+      "changes": {
+        "date": "trade_date",
+        "stock_code": "ts_code",
+        "date_dt": "trade_date"
+      }
+    },
+    {
+      "step": "fix_ohlc_consistency"
+    },
+    {
+      "step": "remove_duplicates",
+      "removed": 307975
+    }
+  ],
+  "final_records": 307975,
+  "timestamp": "2026-03-02 02:00:37"
+}

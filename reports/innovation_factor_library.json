@@ -1,0 +1,26 @@
+{
+  "momentum_20d": {
+    "name": "momentum_20d",
+    "description": "20日价格动量",
+    "category": "技术面因子",
+    "ic_mean": -0.08734609509426003,
+    "ir": -4.664224407774161,
+    "is_valid": false,
+    "final_score": -1.9779455372204138,
+    "last_test_date": "2026-03-01 18:59:58",
+    "test_count": 1,
+    "notes": "典型的趋势跟踪因子，用于测试实验室功能"
+  },
+  "volatility_20d_inv": {
+    "name": "volatility_20d_inv",
+    "description": "20日波动率倒数（低波动因子）",
+    "category": "技术面因子",
+    "ic_mean": -0.04165498715566474,
+    "ir": -5.3392554138034285,
+    "is_valid": false,
+    "final_score": -2.4196277069017142,
+    "last_test_date": "2026-03-01 19:00:09",
+    "test_count": 1,
+    "notes": "低波动异象，用于测试实验室功能"
+  }
+}

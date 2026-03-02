@@ -1,0 +1,438 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-02-28T22:05:00+08:00",
+  "pool_name": "A股量化系统任务池",
+  "description": "Agent可自主领取的任务池，用于提升组织效率",
+  "statistics": {
+    "total_tasks": 15,
+    "available": 8,
+    "in_progress": 3,
+    "completed": 4,
+    "total_assignments": 0,
+    "total_completions": 0
+  },
+  "agents": {
+    "researcher": {
+      "name": "研究员",
+      "specialization": "因子研究、策略研究、数据分析",
+      "capabilities": [
+        "factor_research",
+        "strategy_backtest",
+        "data_analysis",
+        "report_generation"
+      ],
+      "current_tasks": 0,
+      "completed_tasks": 0
+    },
+    "trader": {
+      "name": "交易员",
+      "specialization": "组合管理、风险控制、交易执行",
+      "capabilities": [
+        "portfolio_management",
+        "risk_monitoring",
+        "position_adjustment",
+        "execution_planning"
+      ],
+      "current_tasks": 0,
+      "completed_tasks": 0
+    },
+    "optimizer": {
+      "name": "优化师",
+      "specialization": "模型优化、参数调优",
+      "capabilities": [
+        "model_optimization",
+        "parameter_tuning",
+        "hyperparameter_search",
+        "performance_tuning"
+      ],
+      "current_tasks": 0,
+      "completed_tasks": 0
+    },
+    "monitor": {
+      "name": "监控员",
+      "specialization": "性能监控、风险预警、市场监控",
+      "capabilities": [
+        "performance_monitoring",
+        "risk_alerting",
+        "market_analysis",
+        "report_monitoring"
+      ],
+      "current_tasks": 0,
+      "completed_tasks": 0
+    },
+    "innkeeper": {
+      "name": "管家",
+      "specialization": "系统维护、文档管理、任务协调",
+      "capabilities": [
+        "system_maintenance",
+        "documentation",
+        "task_coordination",
+        "quality_checking"
+      ],
+      "current_tasks": 0,
+      "completed_tasks": 0
+    }
+  },
+  "tasks": [
+    {
+      "id": "T001",
+      "title": "挖掘动量因子",
+      "description": "研究不同周期（20日、60日、120日）的动量因子表现，分析IC值、ICIR和换手率",
+      "priority": "high",
+      "status": "available",
+      "required_capabilities": ["factor_research", "data_analysis"],
+      "preferred_agent": "researcher",
+      "estimated_hours": 8,
+      "deadline": "2026-03-05T18:00:00+08:00",
+      "dependencies": [],
+      "created_at": "2026-02-28T10:00:00+08:00",
+      "assigned_to": null,
+      "started_at": null,
+      "completed_at": null,
+      "output_location": "research/factors/momentum_analysis.md",
+      "checklist": [
+        "收集历史数据",
+        "计算多周期动量因子",
+        "进行IC/IR检验",
+        "分析换手率",
+        "生成研究报告"
+      ]
+    },
+    {
+      "id": "T002",
+      "title": "验证成长因子有效性",
+      "description": "验证营收增长率、净利润增长率等成长因子的选股效果，关注行业中性化处理",
+      "priority": "high",
+      "status": "in_progress",
+      "required_capabilities": ["factor_research", "data_analysis"],
+      "preferred_agent": "researcher",
+      "estimated_hours": 10,
+      "deadline": "2026-03-07T18:00:00+08:00",
+      "dependencies": [],
+      "created_at": "2026-02-27T14:00:00+08:00",
+      "assigned_to": "researcher",
+      "started_at": "2026-02-28T12:00:00+08:00",
+      "completed_at": null,
+      "output_location": "research/factors/growth_factor_validation.md",
+      "checklist": [
+        "收集盈利预测数据",
+        "计算成长因子指标",
+        "进行行业中性化",
+        "回测验证有效性",
+        "生成研究报告"
+      ]
+    },
+    {
+      "id": "T003",
+      "title": "构建多因子模型",
+      "description": "整合动量、成长、估值等因子，构建多因子选股模型，权重优化",
+      "priority": "high",
+      "status": "available",
+      "required_capabilities": ["factor_research", "strategy_backtest"],
+      "preferred_agent": "researcher",
+      "estimated_hours": 16,
+      "deadline": "2026-03-10T18:00:00+08:00",
+      "dependencies": ["T001", "T002"],
+      "created_at": "2026-02-28T10:00:00+08:00",
+      "assigned_to": null,
+      "started_at": null,
+      "completed_at": null,
+      "output_location": "models/multi_factor_model.py",
+      "checklist": [
+        "因子正交化处理",
+        "因子权重分配",
+        "多因子合成",
+        "样本内外回测",
+        "性能指标计算"
+      ]
+    },
+    {
+      "id": "T004",
+      "title": "优化组合权重",
+      "description": "优化投资组合权重分配，平衡风险收益，考虑交易成本",
+      "priority": "medium",
+      "status": "available",
+      "required_capabilities": ["portfolio_management", "risk_monitoring"],
+      "preferred_agent": "trader",
+      "estimated_hours": 12,
+      "deadline": "2026-03-12T18:00:00+08:00",
+      "dependencies": ["T003"],
+      "created_at": "2026-02-28T11:00:00+08:00",
+      "assigned_to": null,
+      "started_at": null,
+      "completed_at": null,
+      "output_location": "models/weight_optimizer.py",
+      "checklist": [
+        "设定优化目标",
+        "添加风险约束",
+        "考虑交易成本",
+        "组合权重求解",
+        "回测验证"
+      ]
+    },
+    {
+      "id": "T005",
+      "title": "集成风险控制器",
+      "description": "将风险控制逻辑集成到主系统，包括行业中性、风格中性、波动率控制",
+      "priority": "high",
+      "status": "completed",
+      "required_capabilities": ["risk_monitoring", "portfolio_management"],
+      "preferred_agent": "trader",
+      "estimated_hours": 6,
+      "deadline": "2026-03-01T18:00:00+08:00",
+      "dependencies": [],
+      "created_at": "2026-02-27T10:00:00+08:00",
+      "assigned_to": "trader",
+      "started_at": "2026-02-27T14:00:00+08:00",
+      "completed_at": "2026-02-28T16:00:00+08:00",
+      "output_location": "code/risk_controller.py",
+      "checklist": [
+        "设计风险控制框架",
+        "实现行业中性",
+        "实现风格中性",
+        "实现波动率控制",
+        "集成到主系统"
+      ]
+    },
+    {
+      "id": "T006",
+      "title": "建立监控系统",
+      "description": "开发监控仪表盘，跟踪性能指标、模型行为、市场环境",
+      "priority": "high",
+      "status": "completed",
+      "required_capabilities": ["performance_monitoring", "risk_alerting"],
+      "preferred_agent": "monitor",
+      "estimated_hours": 8,
+      "deadline": "2026-03-01T18:00:00+08:00",
+      "dependencies": [],
+      "created_at": "2026-02-28T10:00:00+08:00",
+      "assigned_to": "monitor",
+      "started_at": "2026-02-28T14:00:00+08:00",
+      "completed_at": "2026-02-28T22:00:00+08:00",
+      "output_location": "code/monitoring_dashboard.py",
+      "checklist": [
+        "设计监控指标",
+        "实现性能监控",
+        "实现行为监控",
+        "实现市场环境监控",
+        "生成可视化报告"
+      ]
+    },
+    {
+      "id": "T007",
+      "title": "风险阈值配置",
+      "description": "配置风险阈值，包括回撤限制、IC阈值、暴露限制等",
+      "priority": "high",
+      "status": "completed",
+      "required_capabilities": ["risk_monitoring", "documentation"],
+      "preferred_agent": "monitor",
+      "estimated_hours": 2,
+      "deadline": "2026-03-01T18:00:00+08:00",
+      "dependencies": [],
+      "created_at": "2026-02-28T10:00:00+08:00",
+      "assigned_to": "monitor",
+      "started_at": "2026-02-28T14:00:00+08:00",
+      "completed_at": "2026-02-28T22:00:00+08:00",
+      "output_location": "config/risk_limits.json",
+      "checklist": [
+        "研究行业最佳实践",
+        "设定回撤阈值",
+        "设定IC阈值",
+        "设定暴露限制",
+        "文档化配置"
+      ]
+    },
+    {
+      "id": "T008",
+      "title": "定期模型重训练",
+      "description": "每季度重新训练因子模型，更新因子权重，保持模型有效性",
+      "priority": "medium",
+      "status": "available",
+      "required_capabilities": ["model_optimization", "factor_research"],
+      "preferred_agent": "optimizer",
+      "estimated_hours": 16,
+      "deadline": "2026-04-01T18:00:00+08:00",
+      "dependencies": ["T003"],
+      "created_at": "2026-02-28T12:00:00+08:00",
+      "assigned_to": null,
+      "started_at": null,
+      "completed_at": null,
+      "output_location": "models/quarterly_retraining.py",
+      "checklist": [
+        "收集最新数据",
+        "重新评估因子有效性",
+        "更新因子权重",
+        "重新训练模型",
+        "验证并部署"
+      ]
+    },
+    {
+      "id": "T009",
+      "title": "策略工厂流水线",
+      "description": "建立策略研发生命周期，包括因子开发、回测评估、上线部署、持续监控",
+      "priority": "high",
+      "status": "in_progress",
+      "required_capabilities": ["strategy_backtest", "documentation"],
+      "preferred_agent": "innkeeper",
+      "estimated_hours": 20,
+      "deadline": "2026-03-15T18:00:00+08:00",
+      "dependencies": [],
+      "created_at": "2026-02-28T12:00:00+08:00",
+      "assigned_to": "innkeeper",
+      "started_at": "2026-02-28T16:00:00+08:00",
+      "completed_at": null,
+      "output_location": "docs/strategy_factory_pipeline.md",
+      "checklist": [
+        "定义策略研发生命周期",
+        "建立因子开发规范",
+        "设计回测评估框架",
+        "制定上线部署流程",
+        "建立持续监控机制"
+      ]
+    },
+    {
+      "id": "T010",
+      "title": "新策略研发",
+      "description": "探索新的交易策略，如基于事件驱动、因子轮动、机器学习等",
+      "priority": "medium",
+      "status": "available",
+      "required_capabilities": ["factor_research", "strategy_backtest"],
+      "preferred_agent": "researcher",
+      "estimated_hours": 40,
+      "deadline": "2026-03-20T18:00:00+08:00",
+      "dependencies": [],
+      "created_at": "2026-02-28T13:00:00+08:00",
+      "assigned_to": null,
+      "started_at": null,
+      "completed_at": null,
+      "output_location": "research/strategies/",
+      "checklist": [
+        "文献研究",
+        "策略设计",
+        "历史回测",
+        "绩效评估",
+        "优化改进"
+      ]
+    },
+    {
+      "id": "T011",
+      "title": "任务池机制设计",
+      "description": "设计任务池机制，使agent能够自主领取和完成任务",
+      "priority": "high",
+      "status": "completed",
+      "required_capabilities": ["task_coordination", "documentation"],
+      "preferred_agent": "innkeeper",
+      "estimated_hours": 4,
+      "deadline": "2026-03-01T18:00:00+08:00",
+      "dependencies": [],
+      "created_at": "2026-02-28T14:00:00+08:00",
+      "assigned_to": "innkeeper",
+      "started_at": "2026-02-28T14:30:00+08:00",
+      "completed_at": "2026-02-28T22:00:00+08:00",
+      "output_location": ".commander/task_pool.json",
+      "checklist": [
+        "设计任务池结构",
+        "定义任务类型",
+        "建立任务状态管理",
+        "实现任务分配机制",
+        "文档化使用规范"
+      ]
+    },
+    {
+      "id": "T012",
+      "title": "看板机制设计",
+      "description": "设计看板机制，实现任务状态的可视化管理",
+      "priority": "high",
+      "status": "completed",
+      "required_capabilities": ["task_coordination", "documentation"],
+      "preferred_agent": "innkeeper",
+      "estimated_hours": 2,
+      "deadline": "2026-03-01T18:00:00+08:00",
+      "dependencies": ["T011"],
+      "created_at": "2026-02-28T14:00:00+08:00",
+      "assigned_to": "innkeeper",
+      "started_at": "2026-02-28T16:00:00+08:00",
+      "completed_at": "2026-02-28T22:00:00+08:00",
+      "output_location": ".commander/kanban.md",
+      "checklist": [
+        "设计看板结构",
+        "定义任务列",
+        "设计可视化格式",
+        "建立更新规则",
+        "集成到工作流"
+      ]
+    },
+    {
+      "id": "T013",
+      "title": "系统简化",
+      "description": "简化系统架构，减少信息熵，移除冗余文档和重复代码",
+      "priority": "medium",
+      "status": "available",
+      "required_capabilities": ["system_maintenance", "quality_checking"],
+      "preferred_agent": "innkeeper",
+      "estimated_hours": 8,
+      "deadline": "2026-03-05T18:00:00+08:00",
+      "dependencies": [],
+      "created_at": "2026-02-28T15:00:00+08:00",
+      "assigned_to": null,
+      "started_at": null,
+      "completed_at": null,
+      "output_location": "docs/system_simplification_plan.md",
+      "checklist": [
+        "识别冗余文档",
+        "识别重复代码",
+        "制定简化计划",
+        "执行简化操作",
+        "验证系统完整性"
+      ]
+    },
+    {
+      "id": "T014",
+      "title": "参数优化",
+      "description": "优化模型参数，提升策略表现，包括因子权重、持仓数量、交易成本等",
+      "priority": "medium",
+      "status": "available",
+      "required_capabilities": ["parameter_tuning", "model_optimization"],
+      "preferred_agent": "optimizer",
+      "estimated_hours": 20,
+      "deadline": "2026-03-15T18:00:00+08:00",
+      "dependencies": ["T003", "T004"],
+      "created_at": "2026-02-28T15:00:00+08:00",
+      "assigned_to": null,
+      "started_at": null,
+      "completed_at": null,
+      "output_location": "models/parameter_optimization.py",
+      "checklist": [
+        "定义参数空间",
+        "设定优化目标",
+        "执行参数搜索",
+        "验证最优参数",
+        "更新系统配置"
+      ]
+    },
+    {
+      "id": "T015",
+      "title": "回测系统增强",
+      "description": "增强回测系统功能，支持更多回测场景，包括样本内外、压力测试、Monte Carlo模拟",
+      "priority": "low",
+      "status": "available",
+      "required_capabilities": ["strategy_backtest", "data_analysis"],
+      "preferred_agent": "researcher",
+      "estimated_hours": 30,
+      "deadline": "2026-03-20T18:00:00+08:00",
+      "dependencies": [],
+      "created_at": "2026-02-28T16:00:00+08:00",
+      "assigned_to": null,
+      "started_at": null,
+      "completed_at": null,
+      "output_location": "code/enhanced_backtesting.py",
+      "checklist": [
+        "设计回测框架",
+        "实现样本内外回测",
+        "实现压力测试",
+        "实现Monte Carlo模拟",
+        "生成回测报告"
+      ]
+    }
+  ]
+}

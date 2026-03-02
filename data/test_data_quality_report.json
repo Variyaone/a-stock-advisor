@@ -1,0 +1,16 @@
+{
+  "is_valid": false,
+  "total_records": 764203,
+  "missing_values": {},
+  "missing_rate": {},
+  "outlier_records": 66,
+  "stock_data_coverage": {},
+  "issues": [
+    "最高价 < 收盘价/开盘价: 189669 条",
+    "最低价 > 收盘价/开盘价: 189637 条"
+  ],
+  "warnings": [
+    "极端涨跌幅 (>±20%): 66 条"
+  ],
+  "timestamp": "2026-03-02 02:05:50"
+}

@@ -1,0 +1,125 @@
+{
+  "tasks": [
+    {
+      "name": "morning_data_check",
+      "description": "早盘前数据验证（7:00）",
+      "schedule": "0 7 * * 1-5",
+      "command": "cd /Users/variya/.openclaw/workspace/projects/a-stock-advisor && /opt/homebrew/bin/python3 scripts/data_update_v2.py >> logs/morning_data_check.log 2>&1",
+      "enabled": true,
+      "priority": "high",
+      "resource_profile": "light",
+      "dependencies": [],
+      "timeout_minutes": 15,
+      "on_failure": "retry",
+      "max_retries": 2
+    },
+    {
+      "name": "morning_push",
+      "description": "盘前推送（8:00）",
+      "schedule": "0 8 * * 1-5",
+      "command": "cd /Users/variya/.openclaw/workspace/projects/a-stock-advisor && /opt/homebrew/bin/python3 scripts/paper_trading_push.py >> logs/morning_push.log 2>&1",
+      "enabled": true,
+      "priority": "critical",
+      "resource_profile": "light",
+      "dependencies": ["morning_data_check"],
+      "timeout_minutes": 10,
+      "on_failure": "alert",
+      "max_retries": 0
+    },
+    {
+      "name": "evening_data_check",
+      "description": "收盘后数据验证（16:00）",
+      "schedule": "0 16 * * 1-5",
+      "command": "cd /Users/variya/.openclaw/workspace/projects/a-stock-advisor && /opt/homebrew/bin/python3 scripts/data_update_v2.py >> logs/evening_data_check.log 2>&1",
+      "enabled": true,
+      "priority": "high",
+      "resource_profile": "light",
+      "dependencies": [],
+      "timeout_minutes": 20,
+      "on_failure": "retry",
+      "max_retries": 2
+    },
+    {
+      "name": "daily_selection_push",
+      "description": "每日选股和推送（18:30）",
+      "schedule": "30 18 * * 1-5",
+      "command": "cd /Users/variya/.openclaw/workspace/projects/a-stock-advisor && /opt/homebrew/bin/python3 run_daily.py >> logs/daily_run.log 2>&1",
+      "enabled": true,
+      "priority": "critical",
+      "resource_profile": "medium",
+      "dependencies": ["evening_data_check"],
+      "timeout_minutes": 30,
+      "on_failure": "alert",
+      "max_retries": 0
+    },
+    {
+      "name": "health_check",
+      "description": "系统健康检查（凌晨 3:00）",
+      "schedule": "0 3 * * *",
+      "command": "cd /Users/variya/.openclaw/workspace/projects/a-stock-advisor && /opt/homebrew/bin/python3 scripts/health_check.py >> logs/health_check.log 2>&1",
+      "enabled": true,
+      "priority": "medium",
+      "resource_profile": "very_light",
+      "dependencies": [],
+      "timeout_minutes": 5,
+      "on_failure": "log",
+      "max_retries": 0
+    },
+    {
+      "name": "monitor_collector",
+      "description": "监控数据收集（每小时）",
+      "schedule": "0 * * * *",
+      "command": "cd /Users/variya/.openclaw/workspace/projects/a-stock-advisor && /opt/homebrew/bin/python3 scripts/monitor_collector.py >> logs/monitor_collector.log 2>&1",
+      "enabled": true,
+      "priority": "low",
+      "resource_profile": "very_light",
+      "dependencies": [],
+      "timeout_minutes": 2,
+      "on_failure": "log",
+      "max_retries": 0
+    },
+    {
+      "name": "weekly_backtest",
+      "description": "周度策略回测（周日凌晨 2:00）",
+      "schedule": "0 2 * * 0",
+      "command": "cd /Users/variya/.openclaw/workspace/projects/a-stock-advisor && /opt/homebrew/bin/python3 scripts/run_backtest.py >> logs/backtest.log 2>&1",
+      "enabled": true,
+      "priority": "medium",
+      "resource_profile": "heavy",
+      "dependencies": [],
+      "timeout_minutes": 120,
+      "on_failure": "log",
+      "max_retries": 0
+    }
+  ],
+  "resource_profiles": {
+    "very_light": {
+      "max_cpu_percent": 5,
+      "max_memory_mb": 256,
+      "description": "极低负载，快速执行"
+    },
+    "light": {
+      "max_cpu_percent": 25,
+      "max_memory_mb": 512,
+      "description": "低负载，IO密集型"
+    },
+    "medium": {
+      "max_cpu_percent": 50,
+      "max_memory_mb": 1024,
+      "description": "中等负载，计算密集型"
+    },
+    "heavy": {
+      "max_cpu_percent": 100,
+      "max_memory_mb": 2048,
+      "description": "高负载，长时间计算"
+    }
+  },
+  "version": "2.0.0",
+  "last_updated": "2026-03-02T08:30:00Z",
+  "notes": [
+    "新增8:00盘前推送任务",
+    "修复数据更新脚本，使用data_pipeline_v3",
+    "所有任务路径使用绝对路径以确保 cron 可靠执行",
+    "日志统一输出到 logs/ 目录"
+  ]
+}

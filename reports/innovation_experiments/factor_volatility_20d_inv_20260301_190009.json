@@ -1,0 +1,52 @@
+{
+  "factor_name": "volatility_20d_inv",
+  "validation_date": "2026-03-01 19:00:09",
+  "ic_metrics": {
+    "ic_mean": -0.04165498715566474,
+    "ic_std": 0.007801647219942927,
+    "ic_max": -0.024449291220016555,
+    "ic_min": -0.09786290076101066,
+    "ir": -5.3392554138034285,
+    "ic_abs_mean": 0.04165498715566474,
+    "ic_win_rate": 0.0,
+    "ic_t_stat": -191.9905970285034,
+    "ic_p_value": 0.0,
+    "n_periods": 1294
+  },
+  "monotonicity_metrics": {
+    "monotonicity": 0.0,
+    "group_returns": [
+      9.58985467394936,
+      4.046412411301292,
+      2.3228145922241374,
+      0.7107103982155029,
+      0.02250556770750398
+    ],
+    "long_short_return": -9.567349106241855,
+    "spearman_corr": 0,
+    "spearman_p_value": 1,
+    "n_groups": 5
+  },
+  "validation": {
+    "is_valid": false,
+    "passed_tests": [
+      "IC绝对值"
+    ],
+    "failed_tests": [
+      "IR (-5.3393 < 0.5)",
+      "IC胜率 (0.0000 < 0.55)",
+      "单调性 (0.0000 < 0.6)"
+    ],
+    "scores": {
+      "ic_score": 1.0,
+      "ir_score": -10.678510827606857,
+      "win_rate_score": 0.0,
+      "monotonicity_score": 0.0
+    },
+    "final_score": -2.4196277069017142
+  },
+  "periods": 5,
+  "description": "20日波动率倒数（低波动因子）",
+  "category": "技术面因子",
+  "notes": "低波动异象，用于测试实验室功能"
+}

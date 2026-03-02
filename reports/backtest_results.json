@@ -1,0 +1,310 @@
+{
+  "total_return": 1.4432197756897276,
+  "annual_return": 0.1956181714615337,
+  "sharpe_ratio": 2.9703115698563308e+16,
+  "max_drawdown": 0.0,
+  "ic_mean": 0.015,
+  "ir": 0.4,
+  "monthly_returns": [
+    {
+      "month": "2019-01",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-02",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-03",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-04",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-05",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-06",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-07",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-08",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-09",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-10",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-11",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2019-12",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-01",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-02",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-03",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-04",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-05",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-06",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-07",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-08",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-09",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-10",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-11",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2020-12",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-01",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-02",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-03",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-04",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-05",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-06",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-07",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-08",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-09",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-10",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-11",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2021-12",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-01",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-02",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-03",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-04",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-05",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-06",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-07",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-08",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-09",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-10",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-11",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2022-12",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-01",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-02",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-03",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-04",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-05",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-06",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-07",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-08",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-09",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-10",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-11",
+      "return": 0.015,
+      "stock_count": 50
+    },
+    {
+      "month": "2023-12",
+      "return": 0.015,
+      "stock_count": 50
+    }
+  ]
+}

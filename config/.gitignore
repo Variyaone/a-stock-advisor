@@ -1,0 +1,17 @@
+# 不提交敏感配置
+feishu_config.json
+
+# 忽略日志
+*.log
+logs/*.log
+
+# Python
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+
+# 环境变量
+.env
+.env.local

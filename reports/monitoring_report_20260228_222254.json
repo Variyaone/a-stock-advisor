@@ -1,0 +1,55 @@
+{
+  "timestamp": "2026-02-28 22:22:54",
+  "metrics": {
+    "performance": {
+      "年度收益": 0,
+      "年化波动率": 0,
+      "夏普比率": 0,
+      "最大回撤": 0,
+      "胜率": 0,
+      "盈亏比": 0,
+      "回撤检查": {
+        "live_max_drawdown": 0,
+        "backtest_limit": -0.22499999999999998,
+        "absolute_max": -0.25,
+        "warning_threshold": -0.15,
+        "status": "PASS"
+      },
+      "达标检查": {
+        "annual_return_target": 0.15,
+        "annual_return_status": "FAIL",
+        "sharpe_target": 1.5,
+        "sharpe_status": "FAIL"
+      }
+    },
+    "behavior": {
+      "因子得分分布": {
+        "mean": 0.02679512489895857,
+        "std": 0.9342266516122298,
+        "min": -3.2412673400690726,
+        "max": 2.1330333746562666,
+        "median": 0.045402963311388954,
+        "skewness": -0.21021283264964602,
+        "kurtosis": 0.6633910258456628
+      },
+      "IC监控": {
+        "recent_mean": 0.04133146951251466,
+        "recent_std": 0.008620959470194034,
+        "current_ic": 0.04995996582490899,
+        "min_threshold": 0.03,
+        "warning_threshold": 0.05,
+        "consecutive_periods": 5,
+        "below_threshold_count": 1
+      },
+      "alerts": []
+    },
+    "market_environment": {
+      "波动率": {
+        "current": 0.26621612010797335,
+        "mean": 0.24012750111135364,
+        "percentile": 65.87301587301587,
+        "trend": "RISING"
+      },
+      "市场状态": {
+        "timestamp": "2026-02-28 22:22:54",
+        "high_volatility": 
