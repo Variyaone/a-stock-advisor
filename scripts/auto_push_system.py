@@ -6,7 +6,13 @@
 
 import sys
 import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+# 将 code 目录添加到路径最前面，支持本地导入
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)
+code_dir = os.path.join(project_root, 'code')
+sys.path.insert(0, code_dir)
+sys.path.insert(0, project_root)
 
 from datetime import datetime
 import logging
@@ -15,16 +21,13 @@ import pickle
 import pandas as pd
 import numpy as np
 
-# 导入核心模块
-from code.alpha_stock_selector import AlphaStockSelector
-from code.portfolio_tracker import PortfolioTracker
-from code.rebalance_strategy import RebalanceStrategy
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'code'))
+# 导入核心模块（使用本地导入）
+from alpha_stock_selector import AlphaStockSelector
+from portfolio_tracker import PortfolioTracker
+from rebalance_strategy import RebalanceStrategy
 from risk_control_system import RiskControlSystem
 
 # 导入飞书推送
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from feishu_pusher import FeishuPusher
 
 # 配置日志
@@ -44,6 +47,9 @@ class AutoPushSystem:
 
     def __init__(self):
         """初始化系统组件"""
+        # 切换到项目根目录
+        os.chdir(project_root)
+
         self.today = datetime.now().strftime('%Y-%m-%d')
         self.today_dt = datetime.now()
 
@@ -151,7 +157,7 @@ class AutoPushSystem:
 
         try:
             # 使用AlphaStockSelector计算得分
-            scores = self.alpha_selector.calculate_factor_scores(df)
+            scores = pd.Series(self.alpha_selector.calculate_alpha_score(df))
 
             logger.info(f"✓ 计算完成，得分范围: {scores['alpha_score'].min():.2f} ~ {scores['alpha_score'].max():.2f}")
 
