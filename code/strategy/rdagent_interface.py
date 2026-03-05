@@ -322,9 +322,9 @@ class RDAgentFactorInterface:
                 {
                     'formula': f.formula,
                     'description': f.description,
-                    'ic': f.ic,
-                    'ir': f.ir,
-                    'is_valid': f.is_valid,
+                    'ic': float(f.ic),
+                    'ir': float(f.ir),
+                    'is_valid': bool(f.is_valid),
                     'source': f.source,
                     'created_at': f.created_at
                 }
