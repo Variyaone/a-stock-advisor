@@ -983,7 +983,8 @@ def rdagent_factor_mining():
     try:
         from code.strategy.rdagent_interface import RDAgentFactorInterface, is_rdagent_available
         
-        status = "已安装" if is_rdagent_available() else "未安装（使用本地方法）"
+        rdagent_installed = is_rdagent_available()
+        status = f"{Color.OKGREEN}已安装{Color.ENDC}" if rdagent_installed else f"{Color.WARNING}未安装{Color.ENDC}（使用本地方法）"
         print(f"\n{Color.BOLD}【系统状态】{Color.ENDC}")
         print(f"  RDAgent状态: {status}")
         
@@ -991,9 +992,13 @@ def rdagent_factor_mining():
         print("  1. 自动发现新因子")
         print("  2. 查看已发现因子")
         print("  3. 生成因子报告")
+        if not rdagent_installed:
+            print(f"  4. {Color.OKCYAN}安装 RDAgent ⭐推荐{Color.ENDC}")
+        else:
+            print("  4. 更新 RDAgent")
         print("  0. 返回")
         
-        choice = input("\n请选择 (0-3): ").strip()
+        choice = input("\n请选择 (0-4): ").strip()
         
         if choice == '1':
             print_info("开始自动发现因子...")
@@ -1073,6 +1078,9 @@ def rdagent_factor_mining():
                     f.write(report)
                 print_success(f"报告已保存: {report_file}")
         
+        elif choice == '4':
+            install_rdagent()
+            
     except ImportError as e:
         print_error(f"导入RDAgent接口失败: {e}")
         print_info("请确保 code/strategy/rdagent_interface.py 存在")
@@ -1080,6 +1088,104 @@ def rdagent_factor_mining():
         print_error(f"RDAgent因子挖掘失败: {e}")
         import traceback
         print_error(traceback.format_exc())
+
+def install_rdagent():
+    """安装 RDAgent"""
+    print_header("RDAgent 安装向导")
+    
+    print(f"\n{Color.BOLD}【安装方式】{Color.ENDC}")
+    print("  1. 快速安装 (pip install rdagent) ⭐推荐")
+    print("  2. 源码安装 (从 GitHub 克隆)")
+    print("  3. 查看安装说明")
+    print("  0. 返回")
+    
+    choice = input("\n请选择 (0-3): ").strip()
+    
+    if choice == '1':
+        print_info("\n开始安装 RDAgent...")
+        print(f"\n{Color.BOLD}安装命令:{Color.ENDC}")
+        print("  pip install rdagent")
+        
+        confirm = input("\n是否立即执行安装? (y/n): ").strip().lower()
+        if confirm == 'y':
+            import subprocess
+            print_info("正在安装，请稍候...")
+            try:
+                result = subprocess.run(
+                    ['pip', 'install', 'rdagent'],
+                    capture_output=True,
+                    text=True,
+                    timeout=300
+                )
+                if result.returncode == 0:
+                    print_success("RDAgent 安装成功！")
+                    print_info("\n下一步：配置 API Key")
+                    print("  1. 创建 .env 文件")
+                    print("  2. 添加: OPENAI_API_KEY=your_api_key")
+                    print("  3. 或使用国内中转 API")
+                else:
+                    print_error(f"安装失败: {result.stderr}")
+                    print_info("请尝试使用源码安装")
+            except subprocess.TimeoutExpired:
+                print_error("安装超时，请手动执行: pip install rdagent")
+            except Exception as e:
+                print_error(f"安装出错: {e}")
+    
+    elif choice == '2':
+        print_info("\n源码安装步骤：")
+        print(f"\n{Color.BOLD}1. 克隆仓库{Color.ENDC}")
+        print("  git clone https://github.com/microsoft/RD-Agent.git")
+        print("  cd RD-Agent")
+        
+        print(f"\n{Color.BOLD}2. 创建虚拟环境{Color.ENDC}")
+        print("  conda create -n rdagent python=3.10")
+        print("  conda activate rdagent")
+        
+        print(f"\n{Color.BOLD}3. 安装依赖{Color.ENDC}")
+        print("  pip install -e .")
+        
+        print(f"\n{Color.BOLD}4. 配置 API Key{Color.ENDC}")
+        print("  创建 .env 文件:")
+        print("  OPENAI_API_KEY=your_api_key")
+        print("  CHAT_MODEL=gpt-4-turbo")
+        
+        print(f"\n{Color.BOLD}5. 验证安装{Color.ENDC}")
+        print("  rdagent --version")
+        
+        print(f"\n{Color.WARNING}注意：{Color.ENDC} RDAgent 需要 OpenAI API Key")
+        print("  如无官方 API，可使用国内中转服务")
+    
+    elif choice == '3':
+        print(f"\n{Color.BOLD}【RDAgent 安装说明】{Color.ENDC}")
+        print(f"\n{Color.BOLD}系统要求：{Color.ENDC}")
+        print("  - Python 3.10+")
+        print("  - pip 或 conda")
+        print("  - OpenAI API Key (或兼容的 API)")
+        
+        print(f"\n{Color.BOLD}快速安装：{Color.ENDC}")
+        print("  pip install rdagent")
+        
+        print(f"\n{Color.BOLD}配置 API：{Color.ENDC}")
+        print("  创建 .env 文件并添加:")
+        print("  OPENAI_API_KEY=sk-xxx")
+        print("  CHAT_MODEL=gpt-4-turbo  # 可选")
+        
+        print(f"\n{Color.BOLD}国内用户：{Color.ENDC}")
+        print("  可使用 OpenAI 中转 API")
+        print("  在 .env 中添加:")
+        print("  OPENAI_API_BASE=https://your-proxy.com/v1")
+        
+        print(f"\n{Color.BOLD}官方文档：{Color.ENDC}")
+        print("  https://github.com/microsoft/RD-Agent")
+        
+        print(f"\n{Color.BOLD}当前状态：{Color.ENDC}")
+        try:
+            import importlib
+            importlib.import_module('rdagent')
+            print(f"  {Color.OKGREEN}✓ RDAgent 已安装{Color.ENDC}")
+        except ImportError:
+            print(f"  {Color.FAIL}✗ RDAgent 未安装{Color.ENDC}")
+            print(f"  {Color.OKCYAN}→ 选择选项1或2进行安装{Color.ENDC}")
 
 # ==================== 一级菜单：策略开发 ====================
 
