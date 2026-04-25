@@ -15,6 +15,7 @@
 - Sentinel Flowloop 3.0：哨兵3.0引擎，让AI自动分工、监督、拆解任务，连夜写代码
 - deep-research.skill：让AI可以自己深度研究一些相关的知识，根据收集信息自动进一步搜索和验证，避免幻觉
 - skill-forge.skill：用来创建项目的skill和cli，不然整个项目openclaw压根用不了，还要我说需要AI干嘛
+- 后续不再高频维护了，欢迎大家提交PR，另外这个不是一键使用的app，你需要有代码基础或者有一个会读代码的AI
 
 
 
